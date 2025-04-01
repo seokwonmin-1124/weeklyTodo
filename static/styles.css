@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    background-color: #fff;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    max-width: 1000px;
+    width: 100%;
+    min-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.week-nav a {
+    text-decoration: none;
+    color: #4B4343;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 10px;
+}
+
+.week-nav a:hover {
+    text-decoration: underline;
+}
+
+.week {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.date {
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    padding: 6px 12px;
+}
+
+.date.sat {
+    color: #DF6464;
+}
+
+.date.sun {
+    color: #5794E4;
+}
+
+.date.today {
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.todos {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+}
+
+.todo {
+    background-color: #4B4343;
+    color: #FFFFFF;
+    width: 130px;
+    height: 28px;
+    font-size: 13px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    padding: 0 6px;
+}
+
+.todo.done {
+    text-decoration: line-through;
+    color: #ddd;
+}
+
+.auth-box {
+    max-width: 300px;
+    margin: 60px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+}
+.auth-box input {
+    width: 90%;
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 14px;
+}
+.auth-box button {
+    width: 100%;
+    padding: 8px;
+    font-weight: bold;
+    background-color: #4B4343;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+#toggleAuth {
+    background: none;
+    border: none;
+    color: #4B4343;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px;
+}
+
+#logoutBtn {
+    padding: 8px 16px;
+    font-weight: bold;
+    background-color: #888;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logoutBtn:hover {
+    background-color: #666;
+}

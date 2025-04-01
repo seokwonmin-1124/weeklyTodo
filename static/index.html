@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Weekly Todo List</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body style="visibility: hidden;">
+    <div id="authBox" class="auth-box">
+        <form id="authForm">
+            <h2 id="authTitle">로그인</h2>
+            <input type="email" id="authEmail" placeholder="이메일" required>
+            <input type="password" id="authPassword" placeholder="비밀번호" required>
+            <button type="submit">확인</button>
+            <p>
+            <button type="button" id="toggleAuth" style="background: none; border: none; color: #4B4343; text-decoration: underline; cursor: pointer;">회원가입하기</button>
+            </p>
+        </form>
+    </div>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="week-nav" style="text-align: center;">
+                <a href="#" id="prevWeek">← 이전 주</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="#" id="nextWeek">다음 주 →</a>
+            </div>
+            <button id="logoutBtn">로그아웃</button>
+        </div>
+        <h1 id="weekTitle">로딩 중...</h1>
+
+        <div class="week" id="weekContainer">
+            <!-- JS가 주간 일정을 렌더링 -->
+        </div>
+    </div>
+</body>
+</html>
