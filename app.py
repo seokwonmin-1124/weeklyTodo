@@ -28,8 +28,7 @@ class Todo(db.Model):
 
 # 헬퍼
 def get_week_dates(start_date):
-    start = start_date - timedelta(days=start_date.weekday())
-    return [(start + timedelta(days=i)) for i in range(7)]
+    return [(start_date + timedelta(days=i)) for i in range(7)]
 
 def get_iso_week_and_year(d):
     iso_calendar = d.isocalendar()  # returns (ISO year, ISO week number, weekday)
@@ -102,7 +101,7 @@ def get_todos():
     week_dates = get_week_dates(start_date)
     todos_by_date = {}
     for d in week_dates:
-        key = d.strftime('%Y-%m-%d')
+        key = d.isoformat()
         todos = Todo.query.filter_by(date=key, user_id=user_id).all()
         todos_by_date[key] = [{'text': t.text, 'done': t.done} for t in todos]
 

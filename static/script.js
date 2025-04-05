@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function getMonday(d) {
     const date = new Date(d);
-    date.setHours(0, 0, 0, 0); // Ensure consistent time
     const day = date.getDay();
     const diff = date.getDate() - day + (day === 0 ? -6 : 1);
     date.setDate(diff);
+    date.setHours(0, 0, 0, 0);
     return date;
 }
 
@@ -80,7 +80,7 @@ async function handleAuthSubmit(e) {
     const data = await res.json();
     if (data.success) {
         if (!isLogin) {
-            toggleAuthMode(); // Switch to login mode after signup
+            toggleAuthMode();
             alert("회원가입이 완료되었습니다. 로그인해주세요.");
         } else {
             checkLogin();
@@ -99,13 +99,18 @@ async function logout() {
 }
 
 async function loadWeek(monday) {
-    const mondayFixed = new Date(monday);
-    mondayFixed.setDate(mondayFixed.getDate() + 1); // move Monday to Tuesday
-    const startDate = formatDate(mondayFixed);
+    const mondayCopy = new Date(monday);
+    mondayCopy.setDate(mondayCopy.getDate());
+    const startDate = formatDate(mondayCopy);
     const res = await fetch(`/api/todos?start=${startDate}`, { credentials: 'include' });
-    const data = await res.json();
-
-    console.log("서버 응답 데이터:", data);
+    const rawData = await res.json();
+    const data = rawData.todos;
+    if (!data || typeof data !== 'object') {
+        console.error('할 일 데이터를 불러오지 못했습니다:', rawData);
+        return;
+    }
+    console.log('Todos raw keys:', Object.keys(data));
+    console.log('Todos full object:', data);
 
     const container = document.getElementById('weekContainer');
     container.innerHTML = '';
@@ -113,11 +118,9 @@ async function loadWeek(monday) {
     const weekTitle = document.getElementById('weekTitle');
 
     const days = [];
-    const startDay = new Date(monday);
-    startDay.setDate(startDay.getDate() + 1);
     for (let i = 0; i < 7; i++) {
-        const d = new Date(startDay);
-        d.setDate(startDay.getDate() + i);
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
         days.push(d);
     }
 
@@ -130,18 +133,18 @@ async function loadWeek(monday) {
     const displayMonth = parseInt(maxMonth);
     const displayYear = days.find(d => d.getMonth() + 1 === displayMonth).getFullYear();
 
-    const isoYear = data.iso_year;
-    const isoWeek = data.iso_week;
-
-    const todosRaw = data.todos || {};
     const todos = {};
-    for (const k in todosRaw) {
-        todos[k.trim()] = todosRaw[k];
+    for (const [key, val] of Object.entries(data)) {
+        const normalizedKey = new Date(key).toISOString().split('T')[0];
+        todos[normalizedKey] = Array.isArray(val) ? val.map(t => ({
+            text: t.text,
+            done: t.done
+        })) : [];
+        console.log("Parsed normalized key:", normalizedKey, todos[normalizedKey]);
     }
 
-    console.log("ISO 기준 연도/주차:", isoYear, isoWeek);
-    const displayMonthStr = String(displayMonth).padStart(2, '0');
-    
+    console.log("Todos final object:", todos);
+
     const iso = new Date(monday);
     const temp = new Date(iso.getTime());
     temp.setDate(temp.getDate() + 3 - ((temp.getDay() + 6) % 7));
@@ -150,12 +153,16 @@ async function loadWeek(monday) {
     const isoYearFixed = temp.getFullYear();
 
     weekTitle.textContent = isMonthTitle
-        ? `${displayYear}년 ${displayMonthStr}월`
+        ? `${displayYear}년 ${String(displayMonth).padStart(2, '0')}월`
         : `${isoYearFixed}년 ${weekNumber}주차`;
 
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     for (const day of days) {
-        const key = formatDate(day);
-        console.log("렌더링 날짜 key:", key, "데이터 존재 여부:", Object.prototype.hasOwnProperty.call(todos, key), "데이터 내용:", todos[key]);
+        const formattedKey = day.toISOString().split('T')[0];
+        const dayData = todos[formattedKey] || [];
+        console.log('Rendering tasks for:', formattedKey, dayData);
         const div = document.createElement('div');
         div.className = 'day';
 
@@ -163,28 +170,28 @@ async function loadWeek(monday) {
         dateDiv.className = 'date';
         if (day.getDay() === 6) dateDiv.classList.add('sat');
         if (day.getDay() === 0) dateDiv.classList.add('sun');
-        if (formatDate(day) === formatDate(new Date())) {
+        if (formattedKey === formatDate(today)) {
             dateDiv.classList.add('today');
         }
 
         dateDiv.textContent = String(day.getDate()).padStart(2, '0');
-        dateDiv.addEventListener('click', () => showAddInput(dateDiv, key));
+        dateDiv.addEventListener('click', () => showAddInput(dateDiv, formattedKey));
         div.appendChild(dateDiv);
 
         const todosDiv = document.createElement('div');
         todosDiv.className = 'todos';
 
-        const dayData = todos[key] || [];
+        console.log('Rendering tasks for:', formattedKey, dayData);
         if (Array.isArray(dayData)) {
             for (let i = 0; i < dayData.length; i++) {
                 const task = dayData[i];
                 const todo = document.createElement('div');
                 todo.className = 'todo';
                 if (task.done) todo.classList.add('done');
-                todo.dataset.date = key;
+                todo.dataset.date = formattedKey;
                 todo.dataset.index = i;
                 todo.textContent = task.text.slice(0, 10);
-                attachTodoEvents(todo, key, i);
+                attachTodoEvents(todo, formattedKey, i);
                 todosDiv.appendChild(todo);
             }
         }
@@ -193,6 +200,9 @@ async function loadWeek(monday) {
         container.appendChild(div);
     }
 }
+
+// 이하 생략
+
 
 function showAddInput(dateDiv, date) {
     const todosDiv = dateDiv.parentElement.querySelector('.todos');
